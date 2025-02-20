@@ -107,6 +107,10 @@ class ModelLoader {
             logger.warning("Analysis already in progress, skipping request")
             return ""
         }
+        
+        guard let smallImage = image.resized(to: CGSize(width: 1024, height: 1024)) else {
+          return ""
+        }
 
         running = true
         output = ""
@@ -116,7 +120,7 @@ class ModelLoader {
                 logger.debug("Loading model for analysis")
                 let modelContainer = try await load()
 
-                guard let ciImage = CIImage(image: image) else {
+                guard let ciImage = CIImage(image: smallImage) else {
                     logger.error("Failed to convert UIImage to CIImage")
                     throw NSError(
                         domain: "ModelLoader", code: -1,

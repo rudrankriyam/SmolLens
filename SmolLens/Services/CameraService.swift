@@ -3,7 +3,6 @@ import OSLog
 import SwiftUI
 
 class CameraService: NSObject, ObservableObject {
-    // Add logger instance
     private let logger = Logger(
         subsystem: Bundle.main.bundleIdentifier ?? "com.smollens",
         category: "CameraModel")

@@ -18,16 +18,4 @@ struct CameraView: UIViewControllerRepresentable {
     func updateUIViewController(
         _ uiViewController: UIViewController, context: Context
     ) {}
-
-    class Coordinator: NSObject {
-        let parent: CameraView
-
-        init(_ parent: CameraView) {
-            self.parent = parent
-        }
-    }
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
 }

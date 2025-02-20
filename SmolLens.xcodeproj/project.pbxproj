@@ -15,9 +15,22 @@
 		0A7CB9412D6793A0001DCF34 /* SmolLens.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SmolLens.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		0AC8E0922D67CF390037BE03 /* Exceptions for "SmolLens" folder in "Copy Bundle Resources" phase from "SmolLens" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 0A7CB93F2D6793A0001DCF34 /* Resources */;
+			membershipExceptions = (
+				Extensions/UIImage.swift,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		0A7CB9432D6793A0001DCF34 /* SmolLens */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0AC8E0922D67CF390037BE03 /* Exceptions for "SmolLens" folder in "Copy Bundle Resources" phase from "SmolLens" target */,
+			);
 			path = SmolLens;
 			sourceTree = "<group>";
 		};
