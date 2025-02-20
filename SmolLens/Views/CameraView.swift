@@ -2,7 +2,7 @@ import AVFoundation
 import SwiftUI
 
 struct CameraView: UIViewControllerRepresentable {
-    @ObservedObject var camera: CameraModel
+    @ObservedObject var camera: CameraService
 
     func makeUIViewController(context: Context) -> UIViewController {
         let viewController = UIViewController()
