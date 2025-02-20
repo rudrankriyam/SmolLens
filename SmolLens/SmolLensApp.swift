@@ -8,7 +8,6 @@ struct SmolLensApp: App {
     var body: some Scene {
         WindowGroup {
             CameraContainerView()
-                .ignoresSafeArea()
                 .overlay {
                     if showOnboarding {
                         OnboardingView(showOnboarding: $showOnboarding)

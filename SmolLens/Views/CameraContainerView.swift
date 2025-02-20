@@ -20,13 +20,11 @@ struct CameraContainerView: View {
     }
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .bottom) {
             CameraView(camera: camera)
                 .ignoresSafeArea()
 
             VStack {
-                Spacer()
-
                 if isAskViewPresented {
                     AskView(
                         isAskViewPresented: $isAskViewPresented,
@@ -34,7 +32,6 @@ struct CameraContainerView: View {
                         analysisService: analysisService,
                         camera: camera
                     )
-                    .padding(.bottom, 32)
                     .padding(.bottom)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 } else {
@@ -44,7 +41,6 @@ struct CameraContainerView: View {
                         camera: camera,
                         analysisService: analysisService
                     )
-                    .padding(.bottom, 32)
                     .padding(.bottom)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
@@ -80,6 +76,7 @@ struct CameraContainerView: View {
                             "Successfully loaded image from picker, starting analysis"
                         )
                         analysisService.analyzeImage(image)
+                        
                     } else {
                         logger.error("Failed to load picked photo data")
                     }
@@ -100,19 +97,25 @@ struct AskView: View {
                 Image(systemName: "camera.aperture")
                     .font(.title2)
                     .foregroundStyle(.gray)
+                    .accessibilityHidden(true)
 
                 TextField("Ask about details...", text: $questionText)
                     .foregroundStyle(.primary)
 
                 Button(action: {
-                    if let image = camera.capturedImage {
-                        analysisService.analyzeImage(image, prompt: questionText)
+                    camera.capturePhoto {
+                        if let image = camera.capturedImage {
+                            analysisService.analyzeImage(
+                                image, prompt: questionText)
+                        }
+                        isAskViewPresented = false
+                        camera.reset()
+                        questionText = ""
                     }
-                    isAskViewPresented = false
-                    questionText = ""
                 }) {
                     Image(systemName: "paperplane.fill")
                         .foregroundStyle(.gray)
+                        .accessibilityLabel("Send")
                 }
                 .disabled(questionText.isEmpty)
 
@@ -122,6 +125,7 @@ struct AskView: View {
                 }) {
                     Image(systemName: "xmark")
                         .foregroundStyle(.gray)
+                        .accessibilityLabel("Cancel")
                 }
             }
             .padding(.horizontal)
@@ -159,6 +163,7 @@ struct AskButton: View {
                 .padding()
                 .background(.regularMaterial)
                 .clipShape(Circle())
+                .accessibilityLabel("Ask a question")
         }
     }
 }
@@ -192,7 +197,7 @@ struct BottomControlsView: View {
 
                 Spacer()
 
-                CameraControlsView(isCaptured: camera.isCaptured) {
+                CameraControlsView(isCaptured: camera.isCaptured, onCapture: {
                     if camera.isCaptured {
                         logger.debug("Resetting camera for new capture")
                         camera.reset()
@@ -203,9 +208,10 @@ struct BottomControlsView: View {
                             if let image = camera.capturedImage {
                                 analysisService.analyzeImage(image)
                             }
+                            camera.reset()
                         }
                     }
-                }
+                })
 
                 Spacer()
 
