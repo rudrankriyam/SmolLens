@@ -24,21 +24,30 @@ struct CameraContainerView: View {
             CameraView(camera: camera)
                 .ignoresSafeArea()
 
-            if isAskViewPresented {
-                AskView(
-                    isAskViewPresented: $isAskViewPresented,
-                    questionText: $questionText)
-            }
-
             VStack {
                 Spacer()
 
-                BottomControlsView(
-                    isAskViewPresented: $isAskViewPresented,
-                    selectedItem: $selectedItem,
-                    camera: camera,
-                    analysisService: analysisService)
+                if isAskViewPresented {
+                    AskView(
+                        isAskViewPresented: $isAskViewPresented,
+                        questionText: $questionText
+                    )
+                    .padding(.bottom, 32)
+                    .padding(.bottom)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                } else {
+                    BottomControlsView(
+                        isAskViewPresented: $isAskViewPresented,
+                        selectedItem: $selectedItem,
+                        camera: camera,
+                        analysisService: analysisService
+                    )
+                    .padding(.bottom, 32)
+                    .padding(.bottom)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
             }
+            .animation(.easeInOut, value: isAskViewPresented)
 
             if let result = analysisService.analysisResult {
                 ResultView(result: result)
@@ -84,7 +93,6 @@ struct AskView: View {
     var body: some View {
         VStack {
             HStack(spacing: 12) {
-                // Logo
                 Image(systemName: "camera.aperture")
                     .font(.title2)
                     .foregroundStyle(.gray)
@@ -102,11 +110,10 @@ struct AskView: View {
             }
             .padding(.horizontal)
             .padding(.vertical, 12)
-            .background(.ultraThickMaterial)
+            .background(.regularMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 24))
             .padding()
         }
-        .background(Color.black.opacity(0.001))
     }
 }
 
@@ -132,7 +139,7 @@ struct AskButton: View {
                 .font(.system(size: 24))
                 .foregroundStyle(Color.white.gradient)
                 .padding()
-                .background(.ultraThickMaterial)
+                .background(.regularMaterial)
                 .clipShape(Circle())
         }
     }
@@ -190,8 +197,6 @@ struct BottomControlsView: View {
 
             }
         }
-        .padding(.bottom, 32)
-        .padding(.bottom)
     }
 }
 
@@ -210,7 +215,7 @@ struct LoadingImageView: View {
 
             ProgressView("Analyzing Image...")
                 .padding()
-                .background(.ultraThickMaterial)
+                .background(.regularMaterial)
                 .cornerRadius(10)
             Spacer()
         }

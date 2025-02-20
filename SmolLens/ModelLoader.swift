@@ -162,7 +162,7 @@ class ModelLoader {
                                 [
                                     "type": "text",
                                     "text":
-                                        "What do you see in this image? Summarize the image in detail",
+                                        "What do you see in this image? Summarize the image in detail but less than 5 sentences.",
                                 ],
                             ],
                         ],
