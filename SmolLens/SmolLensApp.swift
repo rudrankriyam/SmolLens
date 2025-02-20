@@ -9,9 +9,15 @@ import SwiftUI
 
 @main
 struct SmolLensApp: App {
+    @State private var modelLoader = ModelLoader()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            CameraView()
+                .overlay {
+                    OnboardingView()
+                        .environment(modelLoader)
+                }
         }
     }
 }

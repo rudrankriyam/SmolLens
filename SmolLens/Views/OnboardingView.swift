@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct OnboardingView: View {
-    // Initialize the ModelLoader
-    @State private var modelLoader = ModelLoader()
+    @Environment(ModelLoader.self) var modelLoader
+    @Environment(\.dismiss) private var dismiss
     @State private var shouldNavigateToMainApp = false
 
     var body: some View {
@@ -18,7 +18,7 @@ struct OnboardingView: View {
 
                 Text("Visual Intelligence")
                     .font(.system(size: 32, weight: .bold))
-                    .foregroundStyle(.indigo.gradient)
+                    .foregroundStyle(.orange)
 
                 VStack(spacing: 16) {
                     Text(
@@ -43,10 +43,12 @@ struct OnboardingView: View {
                     switch modelLoader.loadState {
                     case .idle:
                         ProgressView()
+                            .tint(.white)
 
                     case .loading(let progress):
-                        HStack {
+                        VStack(spacing: 8) {
                             ProgressView()
+                                .tint(.white)
 
                             Text("Downloading model... \(Int(progress * 100))%")
                                 .font(.subheadline)
