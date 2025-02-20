@@ -4,14 +4,15 @@ struct ResultView: View {
     let result: String
 
     var body: some View {
-        VStack(spacing: 16) {
-            // Result text display
+        VStack {
             Text(result)
                 .padding()
-                .background(Color.black.opacity(0.7))
+                .background(.ultraThickMaterial)
                 .foregroundColor(.white)
-                .cornerRadius(10)
+                .cornerRadius(16)
+                .padding(.top, 32)
+
+            Spacer()
         }
-        .padding(.bottom, 32)
     }
 }

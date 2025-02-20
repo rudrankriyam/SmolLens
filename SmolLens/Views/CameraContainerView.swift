@@ -37,11 +37,10 @@ struct CameraContainerView: View {
             }
 
             if let result = visionResult {
-                VStack {
-                    Spacer()
-
-                    ResultView(result: result)
-                }
+                ResultView(result: result)
+                    .padding(.top)
+                    .padding()
+                    .animation(.easeInOut(duration: 0.5), value: isAnalyzing)
             }
 
             if isAnalyzing {
@@ -50,10 +49,11 @@ struct CameraContainerView: View {
 
                     ProgressView("Analyzing Image...")
                         .padding()
-                        .background(.ultraThinMaterial)
+                        .background(.ultraThickMaterial)
                         .cornerRadius(10)
                     Spacer()
                 }
+                .animation(.easeInOut(duration: 0.5), value: isAnalyzing)
             }
         }
     }
@@ -82,9 +82,11 @@ struct CameraContainerView: View {
                 )
 
                 await MainActor.run {
-                    logger.debug("Updating UI with analysis results")
-                    visionResult = result
-                    isAnalyzing = false
+                    withAnimation {
+                        logger.debug("Updating UI with analysis results")
+                        visionResult = result
+                        isAnalyzing = false
+                    }
                 }
             } catch {
                 logger.error("Analysis failed: \(error.localizedDescription)")

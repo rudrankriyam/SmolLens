@@ -15,7 +15,7 @@ struct SmolLensApp: App {
                             .environment(modelLoader)
                     }
                 }
-                .animation(.easeInOut(duration: 1.0), value: showOnboarding)
+                .animation(.easeInOut(duration: 0.5), value: showOnboarding)
         }
     }
 }
