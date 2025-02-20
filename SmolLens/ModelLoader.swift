@@ -20,7 +20,6 @@ class ModelLoader {
     func load() async throws -> ModelContainer {
         switch loadState {
         case .idle, .loading:
-            // limit the buffer cache
             MLX.GPU.set(cacheLimit: 20 * 1024 * 1024)
 
             do {

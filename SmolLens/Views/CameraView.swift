@@ -44,7 +44,6 @@ struct CameraView: UIViewControllerRepresentable {
         _ uiViewController: UIViewController, context: Context
     ) {}
 
-    // Add Coordinator if needed for handling camera callbacks
     class Coordinator: NSObject {
         let parent: CameraView
 

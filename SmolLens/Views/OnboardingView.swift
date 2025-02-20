@@ -3,7 +3,11 @@ import SwiftUI
 struct OnboardingView: View {
     @Environment(ModelLoader.self) var modelLoader
     @Environment(\.dismiss) private var dismiss
-    @State private var shouldNavigateToMainApp = false
+    @Binding private var showOnboarding: Bool
+
+    init(showOnboarding: Binding<Bool>) {
+        _showOnboarding = showOnboarding
+    }
 
     var body: some View {
         ZStack {
@@ -17,7 +21,7 @@ struct OnboardingView: View {
 
                 Text("Visual Intelligence")
                     .font(.system(size: 32, weight: .bold))
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(.indigo.gradient)
 
                 VStack(spacing: 16) {
                     Text(
@@ -33,7 +37,7 @@ struct OnboardingView: View {
                     )
                     .font(.callout)
                     .multilineTextAlignment(.center)
-                    .foregroundStyle(.white.gradient.opacity(0.8))
+                    .foregroundStyle(.gray)
                     .padding(.horizontal)
                 }
 
@@ -52,14 +56,16 @@ struct OnboardingView: View {
 
                             Text("Downloading model... \(Int(progress * 100))%")
                                 .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(.gray)
                         }
 
                     case .loaded:
-                        // Navigate to main app
-                        Text("Ready to explore!")
-                            .font(.headline)
-                            .foregroundColor(.green)
+                        Color.clear
+                            .onAppear {
+                                withAnimation(.easeInOut(duration: 0.5)) {
+                                    showOnboarding = false
+                                }
+                            }
 
                     case .error(let error):
                         HStack {
@@ -82,14 +88,9 @@ struct OnboardingView: View {
         .task {
             do {
                 _ = try await modelLoader.load()
-                shouldNavigateToMainApp = true
             } catch {
                 print("Error loading model: \(error)")
             }
         }
     }
-}
-
-#Preview {
-    OnboardingView()
 }
