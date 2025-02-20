@@ -1,4 +1,5 @@
 import OSLog
+import PhotosUI
 import SwiftUI
 
 struct CameraContainerView: View {
@@ -6,6 +7,7 @@ struct CameraContainerView: View {
     @StateObject private var analysisService: ImageAnalysisService
     @State private var isAskViewPresented = false
     @State private var questionText = ""
+    @State private var selectedItem: PhotosPickerItem?
 
     private let logger = Logger(
         subsystem: Bundle.main.bundleIdentifier ?? "com.smollens",
@@ -32,6 +34,7 @@ struct CameraContainerView: View {
                 Spacer()
                 BottomControlsView(
                     isAskViewPresented: $isAskViewPresented,
+                    selectedItem: $selectedItem,
                     camera: camera,
                     analysisService: analysisService)
             }
@@ -50,6 +53,22 @@ struct CameraContainerView: View {
                     .animation(
                         .easeInOut(duration: 0.5),
                         value: analysisService.isAnalyzing)
+            }
+        }
+        .onChange(of: selectedItem) { item in
+            Task {
+                logger.info("Processing picked photo")
+                if let data = try? await item?.loadTransferable(
+                    type: Data.self),
+                    let image = UIImage(data: data)
+                {
+                    logger.debug(
+                        "Successfully loaded image from picker, starting analysis"
+                    )
+                    analysisService.analyzeImage(image)
+                } else {
+                    logger.error("Failed to load picked photo data")
+                }
             }
         }
     }
@@ -120,13 +139,14 @@ struct AskButton: View {
     ZStack(alignment: .top) {
         Color.black
             .ignoresSafeArea()
-        
+
         AskButton(isAskViewPresented: .constant(false))
     }
 }
 
 struct BottomControlsView: View {
     @Binding var isAskViewPresented: Bool
+    @Binding var selectedItem: PhotosPickerItem?
     let camera: CameraService
     let analysisService: ImageAnalysisService
     private let logger = Logger(
@@ -136,15 +156,13 @@ struct BottomControlsView: View {
     var body: some View {
         VStack {
             Spacer()
-            
-            HStack {
-                Spacer()
 
+            HStack {
                 AskButton(isAskViewPresented: $isAskViewPresented)
                     .padding(.leading)
-                
+
                 Spacer()
-                
+
                 CameraControlsView(isCaptured: camera.isCaptured) {
                     if camera.isCaptured {
                         logger.debug("Resetting camera for new capture")
@@ -159,12 +177,23 @@ struct BottomControlsView: View {
                         }
                     }
                 }
-                
+
                 Spacer()
+
+                LibraryButton(selectedItem: $selectedItem)
+                    .padding(.trailing)
             }
+            .padding(.bottom)
         }
-        .padding(.bottom, 32)
     }
+}
+
+#Preview {
+    BottomControlsView(
+        isAskViewPresented: .constant(false),
+        selectedItem: .constant(nil),
+        camera: CameraService(),
+        analysisService: ImageAnalysisService(vlmService: VLMService()))
 }
 
 struct LoadingImageView: View {
