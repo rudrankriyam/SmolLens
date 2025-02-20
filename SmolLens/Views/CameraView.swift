@@ -1,49 +1,22 @@
 import AVFoundation
 import SwiftUI
 
-struct CameraView: UIViewRepresentable {
+struct CameraView: UIViewControllerRepresentable {
     @ObservedObject var camera: CameraModel
-    
-    func makeUIView(context: Context) -> UIView {
-        let viewController = UIView()
-        let captureSession = AVCaptureSession()
-        captureSession.sessionPreset = .photo
 
-        guard
-            let videoCaptureDevice = AVCaptureDevice.default(
-                .builtInWideAngleCamera, for: .video, position: .back)
-        else {
-            return viewController
-        }
-
-        let videoInput: AVCaptureDeviceInput
-
-        do {
-            videoInput = try AVCaptureDeviceInput(device: videoCaptureDevice)
-        } catch {
-            return viewController
-        }
-
-        if captureSession.canAddInput(videoInput) {
-            captureSession.addInput(videoInput)
-        } else {
-            return viewController
-        }
-
-        camera.preview = AVCaptureVideoPreviewLayer(session: captureSession)
-        camera.preview.frame = viewController.frame
-        camera.preview.videoGravity = .resizeAspectFill
-        viewController.layer.addSublayer(camera.preview)
-
-        DispatchQueue.global(qos: .userInitiated).async {
-            captureSession.startRunning()
-        }
+    func makeUIViewController(context: Context) -> UIViewController {
+        let viewController = UIViewController()
+        
+        let previewLayer = AVCaptureVideoPreviewLayer(session: camera.session)
+        previewLayer.frame = viewController.view.layer.bounds
+        previewLayer.videoGravity = .resizeAspectFill
+        viewController.view.layer.addSublayer(previewLayer)
 
         return viewController
     }
 
-    func updateUIView(
-        _ uiView: UIView, context: Context
+    func updateUIViewController(
+        _ uiViewController: UIViewController, context: Context
     ) {}
 
     class Coordinator: NSObject {

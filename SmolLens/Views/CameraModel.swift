@@ -2,9 +2,8 @@ import SwiftUI
 import AVFoundation
 
 class CameraModel: NSObject, ObservableObject {
-    @Published var session = AVCaptureSession()
+    @Published var session: AVCaptureSession
     @Published var alert = false
-    @Published var preview: AVCaptureVideoPreviewLayer!
     @Published var isCaptured = false
     @Published var capturedImage: UIImage?
     
@@ -12,6 +11,7 @@ class CameraModel: NSObject, ObservableObject {
     private let output = AVCapturePhotoOutput()
     
     override init() {
+        self.session = AVCaptureSession()
         super.init()
         checkPermissions()
     }
@@ -40,6 +40,9 @@ class CameraModel: NSObject, ObservableObject {
     private func setUp() {
         do {
             self.session.beginConfiguration()
+            self.session.sessionPreset = .photo
+            self.session.inputs.forEach { session.removeInput($0) }
+            self.session.outputs.forEach { session.removeOutput($0) }
             guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) else { return }
             let input = try AVCaptureDeviceInput(device: device)
             
@@ -52,6 +55,10 @@ class CameraModel: NSObject, ObservableObject {
             }
             
             self.session.commitConfiguration()
+            
+            DispatchQueue.global(qos: .userInitiated).async {
+                self.session.startRunning()
+            }
         } catch {
             print(error.localizedDescription)
         }
@@ -73,4 +80,3 @@ extension CameraModel: AVCapturePhotoCaptureDelegate {
         }
     }
 }
-
