@@ -120,7 +120,7 @@ class ModelLoader {
                         "role": "user",
                         "content": [
                             ["type": "image"],
-                            ["type": "text", "text": "What do you see in this image? Summarize the image in a few sentences."]
+                            ["type": "text", "text": "What do you see in this image? Summarize the image in detail"]
                         ]
                     ]
                 ]

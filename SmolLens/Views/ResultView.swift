@@ -11,6 +11,7 @@ struct ResultView: View {
                 .foregroundColor(.white)
                 .cornerRadius(16)
                 .padding(.top, 32)
+                .frame(maxWidth: .infinity)
 
             Spacer()
         }
