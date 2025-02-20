@@ -3,7 +3,7 @@ import OSLog
 import SwiftUI
 
 protocol ImageAnalyzerProtocol {
-    func analyze(image: UIImage) async throws -> String
+    func analyze(image: UIImage, prompt: String?) async throws -> String
 }
 
 class ImageAnalysisService: ObservableObject {
@@ -22,7 +22,7 @@ class ImageAnalysisService: ObservableObject {
         self.vlmService = vlmService
     }
 
-    func analyzeImage(_ image: UIImage) {
+    func analyzeImage(_ image: UIImage, prompt: String? = nil) {
         analysisTask?.cancel()
 
         logger.info("Starting image analysis process")
@@ -39,7 +39,7 @@ class ImageAnalysisService: ObservableObject {
 
                 if Task.isCancelled { return }
 
-                let result = try await vlmService.analyze(image: image)
+                let result = try await vlmService.analyze(image: image, prompt: prompt)
 
                 if Task.isCancelled { return }
 

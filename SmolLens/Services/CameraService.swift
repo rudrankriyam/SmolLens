@@ -12,10 +12,8 @@ class CameraService: NSObject, ObservableObject {
     @Published var isCaptured = false
     @Published var capturedImage: UIImage?
 
-    // Photo output
     private let output = AVCapturePhotoOutput()
 
-    // Add completion handler for photo capture
     var photoCaptureCompletion: (() -> Void)?
 
     override init() {
@@ -126,7 +124,6 @@ extension CameraService: AVCapturePhotoCaptureDelegate {
             self.session.stopRunning()
             logger.info("Photo captured successfully")
 
-            // Call completion handler on main thread
             DispatchQueue.main.async {
                 self.photoCaptureCompletion?()
             }

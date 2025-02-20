@@ -30,7 +30,9 @@ struct CameraContainerView: View {
                 if isAskViewPresented {
                     AskView(
                         isAskViewPresented: $isAskViewPresented,
-                        questionText: $questionText
+                        questionText: $questionText,
+                        analysisService: analysisService,
+                        camera: camera
                     )
                     .padding(.bottom, 32)
                     .padding(.bottom)
@@ -89,6 +91,8 @@ struct CameraContainerView: View {
 struct AskView: View {
     @Binding var isAskViewPresented: Bool
     @Binding var questionText: String
+    let analysisService: ImageAnalysisService
+    let camera: CameraService
 
     var body: some View {
         VStack {
@@ -99,6 +103,18 @@ struct AskView: View {
 
                 TextField("Ask about details...", text: $questionText)
                     .foregroundStyle(.primary)
+
+                Button(action: {
+                    if let image = camera.capturedImage {
+                        analysisService.analyzeImage(image, prompt: questionText)
+                    }
+                    isAskViewPresented = false
+                    questionText = ""
+                }) {
+                    Image(systemName: "paperplane.fill")
+                        .foregroundStyle(.gray)
+                }
+                .disabled(questionText.isEmpty)
 
                 Button(action: {
                     isAskViewPresented = false
@@ -124,7 +140,9 @@ struct AskView: View {
 
         AskView(
             isAskViewPresented: .constant(true),
-            questionText: .constant(""))
+            questionText: .constant(""),
+            analysisService: ImageAnalysisService(vlmService: VLMService()),
+            camera: CameraService())
     }
 }
 

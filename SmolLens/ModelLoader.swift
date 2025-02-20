@@ -9,7 +9,7 @@ import SwiftUI
 @Observable
 class ModelLoader {
     private var analysisTask: Task<String, Error>?
-    
+
     private let logger = Logger(
         subsystem: Bundle.main.bundleIdentifier ?? "com.smollens",
         category: "ModelLoader")
@@ -100,16 +100,19 @@ class ModelLoader {
         }
     }
 
-    func analyze(image: UIImage) async throws -> String {
+    func analyze(image: UIImage, prompt: String? = nil) async throws -> String {
         logger.info("Starting image analysis")
 
         guard !running else {
             logger.warning("Analysis already in progress, skipping request")
             return ""
         }
-        
-        guard let smallImage = image.resized(to: CGSize(width: 1024, height: 1024)) else {
-          return ""
+
+        guard
+            let smallImage = image.resized(
+                to: CGSize(width: 1024, height: 1024))
+        else {
+            return ""
         }
 
         running = true
@@ -132,14 +135,17 @@ class ModelLoader {
                 try Task.checkCancellation()
 
                 logger.debug("Setting random seed for inference")
-                MLXRandom.seed(UInt64(Date.timeIntervalSinceReferenceDate * 1000))
+                MLXRandom.seed(
+                    UInt64(Date.timeIntervalSinceReferenceDate * 1000))
 
                 let startTime = Date()
                 logger.info("Starting model inference")
 
+                let defaultPrompt =
+                    "What do you see in this image? Summarize the image in detail but less than 5 sentences."
                 let result = try await modelContainer.perform { context in
                     try Task.checkCancellation()
-                    
+
                     let images: [UserInput.Image] = [
                         UserInput.Image.ciImage(ciImage)
                     ]
@@ -161,8 +167,7 @@ class ModelLoader {
                                 ["type": "image"],
                                 [
                                     "type": "text",
-                                    "text":
-                                        "What do you see in this image? Summarize the image in detail but less than 5 sentences.",
+                                    "text": prompt ?? defaultPrompt,
                                 ],
                             ],
                         ],
@@ -183,14 +188,15 @@ class ModelLoader {
                         context: context
                     ) { [weak self] tokens in
                         guard let self else { return .stop }
-                        
+
                         if Task.isCancelled {
                             return .stop
                         }
-                        
+
                         if tokens.count >= maxTokens {
                             logger.debug(
-                                "Reached maximum token count: \(self.maxTokens)")
+                                "Reached maximum token count: \(self.maxTokens)"
+                            )
                             return .stop
                         } else {
                             return .more
@@ -226,10 +232,10 @@ class ModelLoader {
 
     func reset() {
         logger.info("Resetting model loader state")
-        
+
         analysisTask?.cancel()
         analysisTask = nil
-        
+
         running = false
         output = ""
         modelContainer = nil
