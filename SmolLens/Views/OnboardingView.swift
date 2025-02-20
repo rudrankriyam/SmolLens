@@ -7,9 +7,8 @@ struct OnboardingView: View {
 
     var body: some View {
         ZStack {
-            // Background blur effect
             Color.black
-                .opacity(0.2)
+                .opacity(0.7)
                 .background(.ultraThinMaterial)
                 .ignoresSafeArea()
 
@@ -25,6 +24,7 @@ struct OnboardingView: View {
                         "Learn about the objects and places around you and get information about what you see"
                     )
                     .font(.title3)
+                    .foregroundStyle(.white.gradient)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
 
@@ -33,7 +33,7 @@ struct OnboardingView: View {
                     )
                     .font(.callout)
                     .multilineTextAlignment(.center)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.white.gradient.opacity(0.8))
                     .padding(.horizontal)
                 }
 
@@ -46,7 +46,7 @@ struct OnboardingView: View {
                             .tint(.white)
 
                     case .loading(let progress):
-                        VStack(spacing: 8) {
+                        HStack {
                             ProgressView()
                                 .tint(.white)
 
@@ -62,7 +62,7 @@ struct OnboardingView: View {
                             .foregroundColor(.green)
 
                     case .error(let error):
-                        VStack(spacing: 8) {
+                        HStack {
                             Text("Error loading model")
                                 .font(.headline)
                                 .foregroundColor(.red)
@@ -75,7 +75,7 @@ struct OnboardingView: View {
                     }
                 }
                 .padding()
-                .background(.ultraThinMaterial)
+                .background(.ultraThickMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }
         }
