@@ -94,3 +94,8 @@ struct OnboardingView: View {
         }
     }
 }
+
+#Preview {
+    OnboardingView(showOnboarding: .constant(true))
+        .environment(ModelLoader())
+}
