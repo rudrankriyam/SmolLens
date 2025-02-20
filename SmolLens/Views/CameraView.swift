@@ -1,9 +1,11 @@
 import AVFoundation
 import SwiftUI
 
-struct CameraView: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> UIViewController {
-        let viewController = UIViewController()
+struct CameraView: UIViewRepresentable {
+    @ObservedObject var camera: CameraModel
+    
+    func makeUIView(context: Context) -> UIView {
+        let viewController = UIView()
         let captureSession = AVCaptureSession()
         captureSession.sessionPreset = .photo
 
@@ -28,10 +30,10 @@ struct CameraView: UIViewControllerRepresentable {
             return viewController
         }
 
-        let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer.frame = viewController.view.layer.bounds
-        previewLayer.videoGravity = .resizeAspectFill
-        viewController.view.layer.addSublayer(previewLayer)
+        camera.preview = AVCaptureVideoPreviewLayer(session: captureSession)
+        camera.preview.frame = viewController.frame
+        camera.preview.videoGravity = .resizeAspectFill
+        viewController.layer.addSublayer(camera.preview)
 
         DispatchQueue.global(qos: .userInitiated).async {
             captureSession.startRunning()
@@ -40,8 +42,8 @@ struct CameraView: UIViewControllerRepresentable {
         return viewController
     }
 
-    func updateUIViewController(
-        _ uiViewController: UIViewController, context: Context
+    func updateUIView(
+        _ uiView: UIView, context: Context
     ) {}
 
     class Coordinator: NSObject {
