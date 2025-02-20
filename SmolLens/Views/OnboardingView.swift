@@ -60,9 +60,9 @@ struct OnboardingView: View {
                         }
 
                     case .loaded:
-                        Color.clear
+                        Text("Ready to explore!")
                             .onAppear {
-                                withAnimation(.easeInOut(duration: 0.5)) {
+                                withAnimation(.easeInOut(duration: 1.0)) {
                                     showOnboarding = false
                                 }
                             }
