@@ -32,6 +32,7 @@ struct CameraContainerView: View {
 
             VStack {
                 Spacer()
+
                 BottomControlsView(
                     isAskViewPresented: $isAskViewPresented,
                     selectedItem: $selectedItem,
@@ -55,22 +56,24 @@ struct CameraContainerView: View {
                         value: analysisService.isAnalyzing)
             }
         }
-        .onChange(of: selectedItem) { item in
-            Task {
-                logger.info("Processing picked photo")
-                if let data = try? await item?.loadTransferable(
-                    type: Data.self),
-                    let image = UIImage(data: data)
-                {
-                    logger.debug(
-                        "Successfully loaded image from picker, starting analysis"
-                    )
-                    analysisService.analyzeImage(image)
-                } else {
-                    logger.error("Failed to load picked photo data")
+        .onChange(
+            of: selectedItem,
+            { oldValue, newValue in
+                Task {
+                    logger.info("Processing picked photo")
+                    if let data = try? await newValue?.loadTransferable(
+                        type: Data.self),
+                        let image = UIImage(data: data)
+                    {
+                        logger.debug(
+                            "Successfully loaded image from picker, starting analysis"
+                        )
+                        analysisService.analyzeImage(image)
+                    } else {
+                        logger.error("Failed to load picked photo data")
+                    }
                 }
-            }
-        }
+            })
     }
 }
 
@@ -129,7 +132,7 @@ struct AskButton: View {
                 .font(.system(size: 24))
                 .foregroundStyle(Color.white.gradient)
                 .padding()
-                .background(Color.secondary.gradient)
+                .background(.ultraThickMaterial)
                 .clipShape(Circle())
         }
     }
@@ -158,8 +161,9 @@ struct BottomControlsView: View {
             Spacer()
 
             HStack {
+                Spacer()
+
                 AskButton(isAskViewPresented: $isAskViewPresented)
-                    .padding(.leading)
 
                 Spacer()
 
@@ -181,10 +185,13 @@ struct BottomControlsView: View {
                 Spacer()
 
                 LibraryButton(selectedItem: $selectedItem)
-                    .padding(.trailing)
+
+                Spacer()
+
             }
-            .padding(.bottom)
         }
+        .padding(.bottom, 32)
+        .padding(.bottom)
     }
 }
 
