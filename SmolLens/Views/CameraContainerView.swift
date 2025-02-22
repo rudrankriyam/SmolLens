@@ -103,14 +103,15 @@ struct AskView: View {
                     .foregroundStyle(.primary)
 
                 Button(action: {
-                    camera.capturePhoto {
-                        if let image = camera.capturedImage {
-                            analysisService.analyzeImage(
-                                image, prompt: questionText)
+                    Task {
+                        camera.capturePhoto {
+                            if let image = camera.capturedImage {
+                                analysisService.analyzeImage(image, prompt: questionText)
+                                isAskViewPresented = false
+                                camera.reset()
+                                questionText = ""
+                            }
                         }
-                        isAskViewPresented = false
-                        camera.reset()
-                        questionText = ""
                     }
                 }) {
                     Image(systemName: "paperplane.fill")
@@ -222,14 +223,6 @@ struct BottomControlsView: View {
             }
         }
     }
-}
-
-#Preview {
-    BottomControlsView(
-        isAskViewPresented: .constant(false),
-        selectedItem: .constant(nil),
-        camera: CameraService(),
-        analysisService: ImageAnalysisService(vlmService: VLMService()))
 }
 
 struct LoadingImageView: View {
