@@ -1,4 +1,5 @@
 import SwiftUI
+import AppIntents
 
 @main
 struct SmolLensApp: App {
