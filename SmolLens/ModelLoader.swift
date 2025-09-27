@@ -26,7 +26,7 @@ class ModelLoader {
     var output = ""
     var running = false
 
-    let modelConfiguration = ModelRegistry.smolvlm
+    let modelConfiguration = VLMRegistry.smolvlm
     let generateParameters = MLXLMCommon.GenerateParameters(
         temperature: 0.7, topP: 0.9)
     let maxTokens = 800
