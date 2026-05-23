@@ -14,7 +14,7 @@ class CameraService: NSObject, ObservableObject {
 
     private let output = AVCapturePhotoOutput()
 
-    var photoCaptureCompletion: (() -> Void)?
+    var photoCaptureCompletion: ((UIImage?) -> Void)?
 
     override init() {
         self.session = AVCaptureSession()
@@ -87,7 +87,7 @@ class CameraService: NSObject, ObservableObject {
         }
     }
 
-    func capturePhoto(completion: @escaping () -> Void) {
+    func capturePhoto(completion: @escaping (UIImage?) -> Void) {
         logger.info("Initiating photo capture")
         self.photoCaptureCompletion = completion
 
@@ -119,16 +119,20 @@ extension CameraService: AVCapturePhotoCaptureDelegate {
         }
 
         if let imageData = photo.fileDataRepresentation() {
-            self.capturedImage = UIImage(data: imageData)
-            self.isCaptured = true
-            self.session.stopRunning()
-            logger.info("Photo captured successfully")
+            let image = UIImage(data: imageData)
 
             DispatchQueue.main.async {
-                self.photoCaptureCompletion?()
+                self.capturedImage = image
+                self.isCaptured = true
+                self.session.stopRunning()
+                self.logger.info("Photo captured successfully")
+                self.photoCaptureCompletion?(image)
             }
         } else {
             logger.error("Failed to process captured photo data")
+            DispatchQueue.main.async {
+                self.photoCaptureCompletion?(nil)
+            }
         }
     }
 }

@@ -103,15 +103,15 @@ struct AskView: View {
                     .foregroundStyle(.primary)
 
                 Button(action: {
-                    Task {
-                        camera.capturePhoto {
-                            if let image = camera.capturedImage {
-                                analysisService.analyzeImage(image, prompt: questionText)
-                                isAskViewPresented = false
-                                camera.reset()
-                                questionText = ""
-                            }
+                    let prompt = questionText
+                    camera.capturePhoto { image in
+                        guard let image else {
+                            return
                         }
+                        analysisService.analyzeImage(image, prompt: prompt)
+                        isAskViewPresented = false
+                        camera.reset()
+                        questionText = ""
                     }
                 }) {
                     Image(systemName: "paperplane.fill")
@@ -206,7 +206,7 @@ struct BottomControlsView: View {
                     } else {
                         logger.info("Initiating photo capture sequence")
                         camera.capturePhoto {
-                            if let image = camera.capturedImage {
+                            if let image = $0 {
                                 analysisService.analyzeImage(image)
                             }
                             camera.reset()
